@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Weather Dashboard</title>
+<style>
+body {
+  font-family: Arial, sans-serif;
+  background: #eaf3ff;
+  padding: 20px;
+}
+main {
+  max-width: 450px;
+  margin: 50px auto;
+  padding: 25px;
+  background: white;
+  border-radius: 15px;
+  text-align: center;
+}
+input,button {
+  padding: 12px;
+  margin: 5px;
+}
+button {
+  background: #1677ff;
+  color: white;
+  border: 0;
+  border-radius: 8px;
+}
+</style>
+</head>
+<body>
+<main>
+<h1>Weather Dashboard</h1>
+<p>Enter your location coordinates</p>
+<input id="lat" type="number" step="any"
+value="21.17" aria-label="Latitude">
+<input id="lon" type="number" step="any"
+value="72.83" aria-label="Longitude">
+<button onclick="getWeather()">Get Weather</button>
+<p id="result"></p>
+</main>
+<script>
+async function getWeather() {
+ const result = document.getElementById("result");
+ result.textContent = "Loading...";
+ try {
+  const lat = Number(document.getElementById("lat").value);
+  const lon = Number(document.getElementById("lon").value);
+  if (!Number.isFinite(lat) || !Number.isFinite(lon)
+      || Math.abs(lat)>90 || Math.abs(lon)>180)
+   throw Error("Invalid coordinates");
+  const url = "https://api.open-meteo.com/v1/forecast"
+    + "?latitude=" + lat + "&longitude=" + lon
+    + "&current=temperature_2m,relative_humidity_2m";
+  const response = await fetch(url);
+  if (!response.ok) throw Error("Weather unavailable");
+  const data = await response.json();
+  result.textContent =
+    "Temperature: " + data.current.temperature_2m
+    + " °C | Humidity: "
+    + data.current.relative_humidity_2m + "%";
+ } catch (error) {
+  result.textContent = error.message;
+ }
+}
+</script>
+</body>
+</html>
